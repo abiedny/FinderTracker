@@ -11,7 +11,7 @@ public:
 
 	~ObjectTracker();
 private:
-	cv::Ptr<cv::TrackerKCF> tracker;
+	cv::Ptr<cv::TrackerMedianFlow> tracker;
 	cv::Rect2d box;
 };
 

@@ -6,7 +6,7 @@
 
 ObjectTracker::ObjectTracker(cv::Mat initialFrame, cv::Rect boundingBox)
 {
-	tracker = cv::TrackerKCF::create();
+	tracker = cv::TrackerMedianFlow::create();
 	box = boundingBox;
 	tracker->init(initialFrame, box);
 }
@@ -18,6 +18,6 @@ cv::Rect2d ObjectTracker::updateBox(cv::Mat inImage) {
 
 ObjectTracker::~ObjectTracker()
 {
-	tracker->~TrackerKCF();
+	tracker->~TrackerMedianFlow();
 	delete &box;
 }
