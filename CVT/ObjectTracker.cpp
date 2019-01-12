@@ -6,7 +6,7 @@
 
 ObjectTracker::ObjectTracker(cv::Mat initialFrame, cv::Rect boundingBox)
 {
-	tracker = cv::TrackerMedianFlow::create();
+	tracker = cv::TrackerMedianFlow::create(); //definetly use medianflow, its the smoothest
 	box = boundingBox;
 	tracker->init(initialFrame, box);
 }

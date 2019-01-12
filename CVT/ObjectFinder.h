@@ -8,10 +8,14 @@ class ObjectFinder
 public:
 	ObjectFinder();
 	void findFaces(cv::Mat);
+	void findFacesHOG(cv::Mat);
 	std::vector<cv::Rect> currentFaces;
 
 	~ObjectFinder();
 
 private:
+	void adjustRect();
+
 	cv::CascadeClassifier cc;
+	cv::HOGDescriptor hog;
 };
