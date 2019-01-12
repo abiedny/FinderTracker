@@ -8,7 +8,7 @@ using namespace std;
 
 ObjectFinder::ObjectFinder()
 {
-	cc = cv::CascadeClassifier(cv::String("C:\\opencv\\install\\etc\\haarcascades\\haarcascade_fullbody.xml"));
+	cc = cv::CascadeClassifier(cv::String("C:\\opencv\\install\\etc\\haarcascades\\haarcascade_frontalface_default.xml"));
 	hog = cv::HOGDescriptor();
 	hog.setSVMDetector(cv::HOGDescriptor::getDefaultPeopleDetector());
 }
