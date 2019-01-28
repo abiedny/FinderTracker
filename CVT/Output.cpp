@@ -8,14 +8,19 @@ Output::Output()
 {
 	timeouts = { 0 };
 	dcbSerialParams = { 0 };
+	LPCWSTR serialPort;
+	std::string portString = "\\\\.\\COM3";
+	serialPort = (LPCWSTR)portString.c_str();
 
 	//open a serial port
 	hSerial = CreateFile(
-		(LPCWSTR)"\\\\.\\COM1",
+		serialPort,
 		GENERIC_READ | GENERIC_WRITE,
 		0,
 		NULL,
-		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		OPEN_EXISTING,
+		0,
+		NULL);
 	if (hSerial == INVALID_HANDLE_VALUE) {
 		//the serial port failed
 		return;
