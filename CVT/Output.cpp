@@ -8,9 +8,7 @@ Output::Output()
 {
 	timeouts = { 0 };
 	dcbSerialParams = { 0 };
-	LPCWSTR serialPort;
-	std::string portString = "\\\\.\\COM3";
-	serialPort = (LPCWSTR)portString.c_str();
+	LPCWSTR serialPort = L"\\\\.\\COM3";
 
 	//open a serial port
 	hSerial = CreateFile(
@@ -33,7 +31,7 @@ Output::Output()
 		//Couldn't get device state
 		CloseHandle(hSerial);
 	}
-	dcbSerialParams.BaudRate = CBR_38400;
+	dcbSerialParams.BaudRate = CBR_115200;
 	dcbSerialParams.ByteSize = 8;
 	dcbSerialParams.StopBits = ONESTOPBIT;
 	dcbSerialParams.Parity = NOPARITY;
@@ -75,11 +73,12 @@ void Output::sendCoords(cv::Rect2d rect)
 	//first find the center of the rect
 	cv::Point2d br = rect.br();
 	cv::Point2d tl = rect.tl();
-	double cx = (double)(br.x + tl.x) / 2;
-	double cy = (double)(br.y + tl.y) / 2;
+	int cx = (int)(br.x + tl.x) / 2;
+	int cy = (int)(br.y + tl.y) / 2;
 
 	//format it and send it off
-	send(std::to_string(cx) + "," + std::to_string(cy) + "\n");
+	std::string formatted = "X" + std::to_string(cx) + ":Y" + std::to_string(cy) + "\n";
+	send(formatted);
 	return;
 }
 
