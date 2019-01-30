@@ -7,6 +7,7 @@ public:
 	Output();
 	bool send(std::string);
 	void sendCoords(cv::Rect2d);
+	void trimServo(double&, double&);
 	~Output();
 private:
 	HANDLE hSerial;
