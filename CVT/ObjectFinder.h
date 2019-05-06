@@ -9,13 +9,16 @@ public:
 	ObjectFinder();
 	void findFaces(cv::Mat);
 	void findFacesHOG(cv::Mat);
+
+	/// <summary>
+	/// Vector storing all of the faces detected in the last frame passed to a findFaces method
+	/// </summary>
 	std::vector<cv::Rect> currentFaces;
 
 	~ObjectFinder();
 
 private:
 	void adjustRect();
-
 	cv::CascadeClassifier cc;
 	cv::HOGDescriptor hog;
 };
