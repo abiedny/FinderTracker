@@ -8,10 +8,12 @@ class ObjectTracker
 public:
 	ObjectTracker(cv::Mat, cv::Rect);
 	cv::Rect2d updateBox(cv::Mat);
+	bool confirmTracker();
 
 	~ObjectTracker();
 private:
 	cv::Ptr<cv::TrackerMedianFlow> tracker;
 	cv::Rect2d box;
+	std::vector<cv::Rect2d> trackingHistory;
 };
 

@@ -8,7 +8,7 @@ Output::Output()
 {
 	timeouts = { 0 };
 	dcbSerialParams = { 0 };
-	LPCWSTR serialPort = L"\\\\.\\COM3";
+	LPCWSTR serialPort = L"\\\\.\\COM8";
 
 	//open a serial port
 	hSerial = CreateFile(
@@ -24,17 +24,17 @@ Output::Output()
 		return;
 	}
 	
-	// Set device parameters (38400 baud, 1 start bit, 1 stop bit, no parity)
+	// Set device parameters (baud, start, stop, parity)
 	dcbSerialParams.DCBlength = sizeof(dcbSerialParams);
 	if (GetCommState(hSerial, &dcbSerialParams) == 0)
 	{
 		//Couldn't get device state
 		CloseHandle(hSerial);
 	}
-	dcbSerialParams.BaudRate = CBR_115200;
+	dcbSerialParams.BaudRate = CBR_38400;
 	dcbSerialParams.ByteSize = 8;
 	dcbSerialParams.StopBits = ONESTOPBIT;
-	dcbSerialParams.Parity = NOPARITY;
+	dcbSerialParams.Parity = PARITY_NONE;
 	if (SetCommState(hSerial, &dcbSerialParams) == 0)
 	{
 		//Couldn't set device parameters
@@ -54,12 +54,25 @@ Output::Output()
 	}
 }
 
+//string overload
 bool Output::send(std::string sender)
 {
 	const char* bytes = sender.c_str();
 
 	DWORD bytes_written, total_bytes_written = 0;
 	if (!WriteFile(hSerial, bytes, sender.size(), &bytes_written, NULL))
+	{
+		//Error
+		CloseHandle(hSerial);
+		return false;
+	}
+	return true;
+}
+
+//single character overload
+bool Output::send(const char* toSend) {
+	DWORD bytes_written, total_bytes_written = 0;
+	if (!WriteFile(hSerial, toSend, 1, &bytes_written, NULL))
 	{
 		//Error
 		CloseHandle(hSerial);
@@ -76,26 +89,29 @@ void Output::sendCoords(cv::Rect2d rect)
 	int cx = (int)(br.x + tl.x) / 2;
 	int cy = (int)(br.y + tl.y) / 2;
 
-	//then scale it to 0-180 for the servos, with 90 as midpoint
-	double fx = (100 / (double)640)*cx + 40;
-	double fy = (-80 / (double)480)*cy + 130; 
-	trimServo(fx, fy);
+	//midpoint is x,y 320,240
+	double fx = (((320 - (double)cx)*-1)/320)*100;
+	double fy = (((240 - (double)cy)*1)/240)*100;
 
 	//output to console for debug
 	printf("X: %f\n", fx);
 	printf("Y: %f\n", fy);
 
-	//format it and send it off
-	std::string formatted = "X" + std::to_string((int)fx) + ":Y" + std::to_string((int)fy) + "\n";
-	send(formatted);
+	char xPacket = (char)fx;
+	char yPacket = (char)fy;
+
+	send(&xPacket);
+	send(&yPacket);
+	send(&TRACKING);
+
 	return;
 }
 
-void Output::trimServo(double& x, double& y)
-{
-	//tilt 90 points down somewhat
-	y += (double)10;
-	x += (double)10;
+void Output::sendFindingPacket() {
+	//first two packets don't matter if the last packet is a finding mode packet
+	send(&FINDING);
+	send(&FINDING);
+	send(&FINDING);
 }
 
 Output::~Output()

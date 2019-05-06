@@ -15,10 +15,11 @@ ObjectFinder::ObjectFinder()
 
 void ObjectFinder::findFaces(cv::Mat inImage) {
 	vector<cv::Rect> faces;
-	cc.detectMultiScale(inImage, faces, 1.1, 3);
+	cc.detectMultiScale(inImage, faces, 1.3, 3);
 	currentFaces = faces;
 }
 
+//this is not as effective as the cascade classifier
 void ObjectFinder::findFacesHOG(cv::Mat inImage) {
 	vector<cv::Rect> faces;
 	hog.detectMultiScale(inImage, faces,0.5, cv::Size(8, 8), cv::Size(32, 32), 1.05, 2, false);
@@ -26,6 +27,7 @@ void ObjectFinder::findFacesHOG(cv::Mat inImage) {
 	adjustRect();
 }
 
+//currently unused
 void ObjectFinder::adjustRect() {
 	if (!currentFaces.empty()) {
 		for (int i = 0; i < currentFaces.size(); i++) {
@@ -39,6 +41,4 @@ void ObjectFinder::adjustRect() {
 
 ObjectFinder::~ObjectFinder()
 {
-	cc.~CascadeClassifier();
-	hog.~HOGDescriptor();
 }
