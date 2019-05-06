@@ -4,6 +4,9 @@
 #include <string>
 #include <opencv2/core/types.hpp>
 
+/// <summary>
+/// Constructor for the output class. Opens a serial port to output coordinate data to.
+/// </summary>
 Output::Output()
 {
 	timeouts = { 0 };
@@ -54,7 +57,12 @@ Output::Output()
 	}
 }
 
-//string overload
+/// <summary>
+/// Method used to write an std::string to the serial port. Writes the contents of the passed
+/// string to serial in their ASCII encoding.
+/// </summary>
+/// <param name="sender">The string to write to serial.</param>
+/// <returns>Boolean indicating whether or not the write to serial was successfull.</returns>
 bool Output::send(std::string sender)
 {
 	const char* bytes = sender.c_str();
@@ -69,7 +77,11 @@ bool Output::send(std::string sender)
 	return true;
 }
 
-//single character overload
+/// <summary>
+/// Method to write a single byte to the serial port.
+/// </summary>
+/// <param name="toSend">A char which is the byte to write to serial.</param>
+/// <returns>Boolean indicating whether or not the write to serial was successfull.</returns>
 bool Output::send(const char* toSend) {
 	DWORD bytes_written, total_bytes_written = 0;
 	if (!WriteFile(hSerial, toSend, 1, &bytes_written, NULL))
@@ -81,6 +93,11 @@ bool Output::send(const char* toSend) {
 	return true;
 }
 
+/// <summary>
+/// Writes three packets to serial: one with x-coordinate information, one with y-coordinate information,
+/// and the last a constant packet indicating that the camera is in tracking mode.
+/// </summary>
+/// <param name="rect">The cv::rect that is the bounding box whose information to send.</param>
 void Output::sendCoords(cv::Rect2d rect)
 {
 	//first find the center of the rect
@@ -107,6 +124,9 @@ void Output::sendCoords(cv::Rect2d rect)
 	return;
 }
 
+/// <summary>
+/// Sends three constant packets indicating that the camera is in facial detection mode.
+/// </summary>
 void Output::sendFindingPacket() {
 	//first two packets don't matter if the last packet is a finding mode packet
 	send(&FINDING);
@@ -114,6 +134,9 @@ void Output::sendFindingPacket() {
 	send(&FINDING);
 }
 
+/// <summary>
+/// Class destructor.
+/// </summary>
 Output::~Output()
 {
 	// Close serial port
